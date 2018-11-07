@@ -1,17 +1,24 @@
 ﻿using System.Drawing;
 namespace Lesson_1
 {
-    class BaseObject
+    public class BaseObject
     {
         protected Point Pos;
         protected Point Dir;
         protected Size Size;
 
-        public BaseObject(Point pos, Point dir, Size size)
+        //public BaseObject(Point pos, Point dir, Size size)
+        //{
+        //    Pos = pos;
+        //    Dir = dir;
+        //    Size = size;
+        //}
+        public BaseObject(Point pos, Point dir)
         {
             Pos = pos;
             Dir = dir;
-            Size = size;
+            Size = new Size(2,2);
+
         }
 
         public virtual void Draw()
@@ -23,10 +30,26 @@ namespace Lesson_1
         {
             Pos.X += Dir.X;
             Pos.Y += Dir.Y;
-            if (Pos.X < 0) Dir.X = -Dir.X;
-            if (Pos.X > Game.Width) Dir.X = -Dir.X;
-            if (Pos.Y < 0) Dir.Y = -Dir.Y;
-            if (Pos.Y > Game.Height) Dir.Y = -Dir.Y;
+            if (Pos.X < 0)
+            {
+                Dir.X = -Dir.X;
+                Pos.X = 0;
+            }
+            if (Pos.X > Game.Width - Size.Width)
+            {
+                Dir.X = -Dir.X;
+                Pos.X = Game.Width - Size.Width;
+            }
+            if (Pos.Y < 0 )
+            {
+                Dir.Y = -Dir.Y;
+                Pos.Y = 0;
+            }
+            if (Pos.Y > Game.Height-Size.Height)
+            {
+                Dir.Y = -Dir.Y;
+                Pos.Y = Game.Height-Size.Height;
+            }
         }   
     }
 

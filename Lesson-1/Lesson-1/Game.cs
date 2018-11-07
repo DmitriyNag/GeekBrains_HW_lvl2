@@ -10,13 +10,15 @@ namespace Lesson_1
         public static int Width { get; set; }
         public static int Height { get; set; }
         public static BaseObject[] _objs;
+        internal const int numOfAsters = 10;
+        internal const int numOfSmallStars = 50;
+        internal const int numOfMiddleStars = 20;
         static Game()
         {
         }
         public static void Init(Form form)
         {
             Graphics g;
-
             // Предоставляет доступ к главному буферу графического контекста для текущего приложения
             _context = BufferedGraphicsManager.Current;
             g = form.CreateGraphics();
@@ -37,17 +39,19 @@ namespace Lesson_1
         private static void Load()
         {
             Random r = new Random();
-
-            _objs = new BaseObject[30];
-            for (int i = 0; i < _objs.Length/2; i++)
+            _objs = new BaseObject[numOfAsters + numOfSmallStars + numOfMiddleStars];
+            for (int i = 0; i < numOfAsters; i++)
             {
-                _objs[i] = new Star(new Point(Width, r.Next(0, Height)),new Point(i, 0),new Size(6,6)); 
+                _objs[i] = new Asteroid(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(-16, 16), r.Next(-16, 16)));
             }
-            for (int i = _objs.Length / 2; i < _objs.Length; i++)
+            for (int i = numOfAsters; i < numOfAsters + numOfSmallStars; i++)
             {
-                _objs[i] = new BaseObject(new Point(Width, r.Next(0, Height)), new Point(-i, -i), new Size(10, 10));
+                _objs[i] = new SmallStar(new Point(r.Next(Width, 2 * Width), r.Next(0, Height)), new Point(r.Next(3, 6), 0));
             }
-
+            for (int i = numOfAsters + numOfSmallStars; i < _objs.Length; i++)
+            {
+                _objs[i] = new MediumStar(new Point(r.Next(Width, 2 * Width), r.Next(0, Height)), new Point(r.Next(9, 12), 0));
+            }
         }
         public static void Draw()
         {
