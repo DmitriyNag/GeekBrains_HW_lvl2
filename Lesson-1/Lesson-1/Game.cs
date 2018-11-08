@@ -11,7 +11,7 @@ namespace Lesson_1
         public static int Height { get; set; }
         public static BaseObject[] _objs;
         internal const int numOfAsters = 10;
-        internal const int numOfSmallStars = 50;
+        internal const int numOfSmallStars = 80;
         internal const int numOfMiddleStars = 20;
         static Game()
         {

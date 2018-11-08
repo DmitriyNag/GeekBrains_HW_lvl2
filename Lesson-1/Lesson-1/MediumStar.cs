@@ -7,7 +7,8 @@ namespace Lesson_1
     {
         public MediumStar(Point pos, Point dir) : base(pos, dir)
         {
-            r = new Random();
+            MinSpeed = 6;
+            MaxSpeed = 8;
         }
         public override void Draw()
         {

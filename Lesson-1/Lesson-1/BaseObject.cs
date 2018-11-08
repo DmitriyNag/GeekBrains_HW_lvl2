@@ -18,7 +18,6 @@ namespace Lesson_1
             Pos = pos;
             Dir = dir;
             Size = new Size(2,2);
-
         }
 
         public virtual void Draw()

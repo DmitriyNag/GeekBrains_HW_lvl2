@@ -8,7 +8,8 @@ namespace Lesson_1
         protected Bitmap pt = new Bitmap(1, 1);
         public SmallStar(Point pos, Point dir) : base(pos, dir)
         {
-            r = new Random();
+            MinSpeed = 1;
+            MaxSpeed = 4;
         }
         public override void Draw()
         {
