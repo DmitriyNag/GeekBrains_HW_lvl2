@@ -1,4 +1,4 @@
-﻿namespace Lesson_1
+﻿namespace MyGame
 {
     partial class Form1
     {

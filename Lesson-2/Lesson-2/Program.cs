@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Lesson_1
+namespace MyGame
 {
     static class Program
     {
@@ -19,11 +19,12 @@ namespace Lesson_1
             //Application.Run(new Form1());
             Form form = new Form
             {
-                Width = 800,
-                Height = 600
+                Width = Screen.PrimaryScreen.Bounds.Width,
+                Height = Screen.PrimaryScreen.Bounds.Height
             };
             Game.Init(form);
             form.Show();
+            Game.Load();
             Game.Draw();
             Application.Run(form);
         }
