@@ -11,9 +11,7 @@ namespace MyGame
         /// </summary>
         /// <param name="pos">точка, место положения звезды</param>
         /// <param name="dir">вектор, направление движения звезды</param>
-        /// <param name="minspeed">минимальная скорость движения звезды</param>
-        /// <param name="maxspeed">макиамльная скорость движения звезды</param>
-        public SmallStar(Point pos, Point dir, int minspeed, int maxspeed) : base(pos, dir, minspeed, maxspeed)
+        public SmallStar(Point pos, Point dir) : base(pos, dir)
         {
         }
         /// <summary>

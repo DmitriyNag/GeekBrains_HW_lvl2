@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
+using System;
 
 namespace MyGame
 {
@@ -33,22 +33,18 @@ namespace MyGame
             Pos.Y += Dir.Y;
             if (Pos.X < 0 - Size.Width)
             {
-                //Dir.X = -Dir.X;
                 Pos.X = Game.Width + Size.Width;
             }
             if (Pos.X > Game.Width + Size.Width)
             {
-                //Dir.X = -Dir.X;
                 Pos.X = 0 - Size.Width;
             }
             if (Pos.Y < 0 - Size.Height)
             {
-                //Dir.Y = -Dir.Y;
                 Pos.Y = Game.Height + Size.Height;
             }
             if (Pos.Y > Game.Height + Size.Height)
             {
-                //Dir.Y = -Dir.Y;
                 Pos.Y = 0 - Size.Height;
             }
         }
@@ -57,8 +53,9 @@ namespace MyGame
         /// </summary>
         public void Renew()
         {
-            //Pos.X = Game.Width - Size.Width;
-            Dir.X = -Dir.X;
+            Pos.X = Game.Width +1;
+            Pos.Y = rnd.Next(0, Game.Height);
+            Dir.X = -Math.Abs(Dir.X);
         }
 
     }

@@ -1,42 +1,38 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 namespace MyGame
 {
     class Bullet : BaseObject
     {
+        public delegate void BullMessage(object obj);
+        public event BullMessage BulletDelete;
         /// <summary>
         /// Создаем объект пуля
         /// </summary>
         /// <param name="pos">место полоения пули</param>
         /// <param name="dir">направление движения пуди и скорость</param>
-        public Bullet(Point pos, Point dir) : base(pos, dir)
+        public Bullet(Point pos, Point dir, Size size) : base(pos, dir,size)
         {
-            Size size = new Size(1, 4);
         }
         /// <summary>
         /// Отрисовываем пулю
         /// </summary>
         public override void Draw()
         {
-            Game.Buffer.Graphics.DrawRectangle(Pens.OrangeRed, Pos.X, Pos.Y, Size.Width, Size.Height);
+            Game.Buffer.Graphics.FillRectangle(Brushes.DarkRed, Pos.X, Pos.Y, Size.Width, Size.Height);
         }
         /// <summary>
         /// Обнолвяем положение пули
         /// </summary>
         public override void Update()
         {
-            Pos.X = Pos.X + 20;
+            Pos.X+= Dir.X;
             if (Pos.X > Game.Width)
             {
-                Pos.X = 0;
+                BulletDelete?.Invoke(this); // уничтожение пули
             }
         }
-        /// <summary>
-        /// Регенерируем пулю в начало экрана
-        /// </summary>
-        public void Renew()
-        {
-            Pos.X = 0;
-        }
+
     }
 
 }

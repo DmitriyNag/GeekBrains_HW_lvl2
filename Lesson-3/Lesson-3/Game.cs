@@ -3,23 +3,37 @@ using System.Drawing;
 using System.Windows.Forms;
 namespace MyGame
 {
-    //2. Переделать виртуальный метод Update в BaseObject в абстрактный и реализовать его в наследниках.
-    //3. Сделать так, чтобы при столкновениях пули с астероидом они регенерировались в разных концах экрана.
-    //4. Сделать проверку на задание размера экрана в классе Game.Если высота или ширина(Width, Height) больше 1000 или принимает отрицательное значение, выбросить исключение ArgumentOutOfRangeException().
-    //5. * Создать собственное исключение GameObjectException, которое появляется при попытке создать объект с неправильными характеристиками(например, отрицательные размеры, слишком большая скорость или позиция).
+    //      1. Добавить космический корабль, как описано в уроке.
+    //      2. Добработать игру «Астероиды».
+    //       а) Добавить ведение журнала в консоль с помощью делегатов;
+    //       б) * Добавить это и в файл.
+    //      3. Разработать аптечки, которые добавляют энергию.
+    //      4. Добавить подсчет очков за сбитые астероиды.
+    //      5. *Добавить в пример Lesson3 обобщенный делегат.
     static class Game
     {
         private static BufferedGraphicsContext _context;
         public static BufferedGraphics Buffer;
         public static int Width { get; set; }
         public static int Height { get; set; }
+
         public static BaseObject[] _objs;
         public static Asteroid[] _asteroids;
         private static Bullet _bullet;
+        private static Ship _ship;
+        private static Medkit _medkit;
+
         internal const int numOfAsters = 10;
-        internal const int numOfSmallStars = 90;
+        internal const int numOfSmallStars = 200;
         internal const int numOfMiddleStars = 10;
+        internal const int shipMaxEnergy = 50;
+        internal const int EnergyForMedkit = 5;
+        internal const int EnergyForAsterCollision = 10;
+        internal const int scoreForAster = 10;
+
         static Random r = new Random();
+        private static Timer timer;
+
         static Game()
         {
         }
@@ -42,10 +56,12 @@ namespace MyGame
             else
             {
                 Buffer = _context.Allocate(g, new Rectangle(0, 0, Width, Height));
-
-                Timer timer = new Timer { Interval = 50 };
+                timer = new Timer { Interval = 25 };
                 timer.Start();
                 timer.Tick += Timer_Tick;
+                form.KeyDown += Form_KeyDown;
+                Ship.ShipDie += Finish;
+                //почему здесь += ? получается каждое действие записывается в список? а мне нужно только полсденее, нет?
             }
         }
 
@@ -54,27 +70,44 @@ namespace MyGame
             Draw();
             Update();
         }
+
+        /// <summary>
+        /// Отслеживаем нажатие клавиш
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static void Form_KeyDown(object sender, KeyEventArgs  e)
+        {
+            if(e.KeyCode == Keys.Up) _ship.Up();
+            if(e.KeyCode == Keys.Down) _ship.Down();
+            if(e.KeyCode == Keys.Right) _ship.Right();
+            if(e.KeyCode == Keys.Left) _ship.Left();
+            if (e.KeyCode == Keys.Space)
+            {
+                _bullet = new Bullet(new Point(_ship.ShipNouse.X, _ship.ShipNouse.Y), new Point(10, 0),
+                    new Size(10, 4));
+                _bullet.BulletDelete += DeleteObj;
+            } 
+        }
         /// <summary>
         /// Создаем все объекты на форме
         /// </summary>
         public static void Load()
         {
-            //Random r = new Random();
-            _bullet = new Bullet(new Point(0, 200), new Point(5, 0));
+            _ship = new Ship(new Point(10,Height/2),new Point(20,20));
+            _medkit = new Medkit(new Point(Game.Width * 3, r.Next(20, Game.Height - 20)), new Point(r.Next(10, 20), 0));
+
             _asteroids = new Asteroid[numOfAsters];
             for (int i = 0; i < _asteroids.Length; i++)
-            {
-                _asteroids[i] = new Asteroid(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(-16, 16), r.Next(-16, 16)));
-            }
+                _asteroids[i] = new Asteroid(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(-8, 8), r.Next(-8, 8)));
+
             _objs = new BaseObject[numOfSmallStars + numOfMiddleStars];
             for (int i = 0; i < numOfSmallStars; i++)
-            {
-                _objs[i] = new SmallStar(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(3, 6), 0), 0, 4);
-            }
+                _objs[i] = new SmallStar(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(1, 3), 0));
+
             for (int i = numOfSmallStars; i < _objs.Length; i++)
-            {
-                _objs[i] = new MediumStar(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(9, 12), 0), 7,8);
-            }
+                _objs[i] = new MediumStar(new Point(r.Next(0, Width), r.Next(0, Height)), new Point(r.Next(4, 5), 0));
+
         }
         /// <summary>
         /// Отрисовываем объекты
@@ -85,8 +118,11 @@ namespace MyGame
             foreach (var t in _objs)
                 t.Draw();
             foreach (var a in _asteroids)
-                a.Draw();
-            _bullet.Draw();
+                a?.Draw();
+            _bullet?.Draw();
+            _medkit?.Draw();
+            _ship.Draw();
+            TextDraw();
             Buffer.Render();
         }
         /// <summary>
@@ -96,17 +132,56 @@ namespace MyGame
         {
             foreach (var t in _objs)
                 t.Update();
-            foreach (var a in _asteroids)
+            for (int i = 0; i < _asteroids.Length; i++)
             {
-                a.Update();
-                if (a.Collision(_bullet))
+                if(_asteroids[i]==null) continue;
+                _asteroids[i].Update();
+                if (_bullet != null && _bullet.Collision(_asteroids[i]))
                 {
-                    _bullet.Renew();
-                    a.Renew();
-                    //System.Media.SystemSounds.Hand.Play();
+                    _asteroids[i].Renew();
+                    DeleteObj(_bullet);
+                    _ship.ScoreUp(scoreForAster);
+                    continue;
+                }
+
+                if (_ship.Collision(_asteroids[i]))
+                {
+                    _asteroids[i].Renew();
+                    _ship.EnergyLow(EnergyForAsterCollision);
+                    if (_ship.Energy <= 0) _ship?.Die();
                 }
             }
-            _bullet.Update();
+
+            if (_ship.Collision(_medkit))
+            {
+                _medkit.Regenerate();
+                _ship.EnergyHigh(EnergyForMedkit);
+                if (_ship.Energy > shipMaxEnergy) _ship.Energy = shipMaxEnergy;
+            }
+            _bullet?.Update();
+            _medkit?.Update();
+            _ship.Update();
+        }
+
+        public static void Finish()
+        {
+            timer.Stop();
+            Buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 40, FontStyle.Underline), Brushes.White, Game.Width/ 2-100, Game.Height/2-50);
+            Buffer.Graphics.DrawString($"Your score: {_ship.Score}", new Font(FontFamily.GenericSansSerif, 30), Brushes.White, Game.Width / 2-100, Game.Height / 2+50);
+            Buffer.Render();
+        }
+
+        public static void DeleteObj(object obj)
+        {
+            obj = null;
+        }
+
+        private static void TextDraw()
+        {
+            if (_ship != null)
+                Buffer.Graphics.DrawString("Energy:" + _ship.Energy, new Font(FontFamily.GenericMonospace, 16, FontStyle.Bold), Brushes.White, 0, 0);
+            if (_ship != null)
+                Buffer.Graphics.DrawString("Score:" + _ship.Score, new Font(FontFamily.GenericMonospace, 16, FontStyle.Bold), Brushes.White, Game.Width - 150, 0);
         }
     }
 

@@ -5,7 +5,6 @@ namespace MyGame
 {
     class Star : BaseObject
     {
-        static Random rnd = new Random();
         protected Color StarColor { get; set; }
         protected int Speed { get; set; }
 
@@ -14,12 +13,10 @@ namespace MyGame
         /// </summary>
         /// <param name="pos">место располоения звезды</param>
         /// <param name="dir">направление движени и скорость</param>
-        /// <param name="minspeed"> минимально возможная скорость звезды</param>
-        /// <param name="maxspeed"> максимально возможная скорость звезды</param>
-        public Star(Point pos, Point dir,int minspeed, int maxspeed) : base(pos, dir)
+        public Star(Point pos, Point dir) : base(pos, dir)
         {
             SelectStarColor();
-            Speed = rnd.Next(minspeed, maxspeed);
+            //Speed = rnd.Next(minspeed, maxspeed);
         }
         /// <summary>
         /// Отрисовываем звезду
@@ -39,7 +36,6 @@ namespace MyGame
             {
                 Pos.X = Game.Width + 1;
                 Pos.Y = rnd.Next(0, Game.Height);
-                //Dir.X = rnd.Next(MinSpeed, MaxSpeed);
                 SelectStarColor();
             }
         }
@@ -74,7 +70,6 @@ namespace MyGame
                     break;
 
             }
-            //Console.WriteLine(StarColor);
         }
     }
 
