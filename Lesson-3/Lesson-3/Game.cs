@@ -9,7 +9,7 @@ namespace MyGame
     //       б) * Добавить это и в файл.
     //      3. Разработать аптечки, которые добавляют энергию.
     //      4. Добавить подсчет очков за сбитые астероиды.
-    //      5. *Добавить в пример Lesson3 обобщенный делегат.
+    public delegate void MyDelegate(string str);
     static class Game
     {
         private static BufferedGraphicsContext _context;
@@ -33,6 +33,7 @@ namespace MyGame
 
         static Random r = new Random();
         private static Timer timer;
+        public static event MyDelegate Msg;
 
         static Game()
         {
@@ -61,7 +62,8 @@ namespace MyGame
                 timer.Tick += Timer_Tick;
                 form.KeyDown += Form_KeyDown;
                 Ship.ShipDie += Finish;
-                //почему здесь += ? получается каждое действие записывается в список? а мне нужно только полсденее, нет?
+                Logger.StartLog();
+                Msg += Logger.Log;
             }
         }
 
@@ -86,6 +88,7 @@ namespace MyGame
             {
                 _bullet = new Bullet(new Point(_ship.ShipNouse.X, _ship.ShipNouse.Y), new Point(10, 0),
                     new Size(10, 4));
+                Msg?.Invoke($"Произведен выстрел c координатами X:{_ship.Rect.X} Y:{_ship.Rect.Y}");
                 _bullet.BulletDelete += DeleteObj;
             } 
         }
@@ -126,7 +129,7 @@ namespace MyGame
             Buffer.Render();
         }
         /// <summary>
-        /// Обновляем положение объектов
+        /// Обновляем положение объектов и ловим столкновения
         /// </summary>
         public static void Update()
         {
@@ -141,6 +144,7 @@ namespace MyGame
                     _asteroids[i].Renew();
                     DeleteObj(_bullet);
                     _ship.ScoreUp(scoreForAster);
+                    Msg?.Invoke($"пуля попала в астероид {i} c координатами X:{_asteroids[i].Rect.X} Y:{_asteroids[i].Rect.Y} | Счет: {_ship.Score}");
                     continue;
                 }
 
@@ -148,7 +152,13 @@ namespace MyGame
                 {
                     _asteroids[i].Renew();
                     _ship.EnergyLow(EnergyForAsterCollision);
-                    if (_ship.Energy <= 0) _ship?.Die();
+                    Msg?.Invoke($"В корабль (Energy: {_ship.Energy})попал астероид {i} c координатами X:{_ship.Rect.X} Y:{_ship.Rect.Y}");
+
+                    if (_ship.Energy <= 0)
+                    {
+                        Msg?.Invoke($"Корабль уничтожен");
+                        _ship?.Die();
+                    }
                 }
             }
 
@@ -157,25 +167,36 @@ namespace MyGame
                 _medkit.Regenerate();
                 _ship.EnergyHigh(EnergyForMedkit);
                 if (_ship.Energy > shipMaxEnergy) _ship.Energy = shipMaxEnergy;
+                Msg?.Invoke($"Корабль (Energy: {_ship.Energy}) собрал аптечку c координатами X:{_ship.Rect.X} Y:{_ship.Rect.Y}");
+
             }
             _bullet?.Update();
             _medkit?.Update();
             _ship.Update();
         }
-
+        /// <summary>
+        /// Завершение игры
+        /// </summary>
         public static void Finish()
         {
             timer.Stop();
             Buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 40, FontStyle.Underline), Brushes.White, Game.Width/ 2-100, Game.Height/2-50);
             Buffer.Graphics.DrawString($"Your score: {_ship.Score}", new Font(FontFamily.GenericSansSerif, 30), Brushes.White, Game.Width / 2-100, Game.Height / 2+50);
             Buffer.Render();
+            Logger.CloseLog();
         }
 
+        /// <summary>
+        /// Метод для удаления объекта
+        /// </summary>
+        /// <param name="obj"></param>
         public static void DeleteObj(object obj)
         {
             obj = null;
         }
-
+        /// <summary>
+        /// Выаодим на экран счет и здоровье
+        /// </summary>
         private static void TextDraw()
         {
             if (_ship != null)
@@ -184,5 +205,4 @@ namespace MyGame
                 Buffer.Graphics.DrawString("Score:" + _ship.Score, new Font(FontFamily.GenericMonospace, 16, FontStyle.Bold), Brushes.White, Game.Width - 150, 0);
         }
     }
-
 }

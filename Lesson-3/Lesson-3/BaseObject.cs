@@ -13,6 +13,7 @@ namespace MyGame
         protected Size Size;
         static protected Random rnd = new Random();
         public delegate void Message();
+
         /// <summary>
         /// Интерфейс ICollision, вычисляем столкновение с другими объектами
         /// </summary>

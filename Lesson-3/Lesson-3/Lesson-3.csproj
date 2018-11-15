@@ -59,6 +59,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameObjectException.cs" />
     <Compile Include="ICollision.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MediumStar.cs" />
     <Compile Include="Medkit.cs" />
     <Compile Include="Program.cs" />

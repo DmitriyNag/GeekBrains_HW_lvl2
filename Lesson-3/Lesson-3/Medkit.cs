@@ -5,9 +5,13 @@ namespace MyGame
 {
     class Medkit : BaseObject
     {
-        protected int Speed { get; set; }
         protected Image image;
 
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="dir"></param>
         public Medkit(Point pos, Point dir) : base(pos, dir)
         {
             image = Image.FromFile("../../Medkit.gif");
@@ -29,7 +33,9 @@ namespace MyGame
             if (Pos.X < 0)
                 Regenerate();
         }
-
+        /// <summary>
+        /// Заново создать аптечку в игре
+        /// </summary>
         public void Regenerate()
         {
             Pos.X = 3 * Game.Width;
