@@ -1,0 +1,35 @@
+﻿<Window x:Class="WpfApp2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp2"
+        mc:Ignorable="d"
+        Title="Организационная структура" Height="500" Width="1200">
+    <Grid>
+        <ListView Name= "ListViewChildDeps"  d:ItemsSource="{Binding CurrentS.Departments}" Margin="20,-200,650,0" SelectionChanged="ListViewChildDeps_SelectionChanged" Height="200">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="200"  DisplayMemberBinding="{Binding Path=Name}">Департамент</GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <ListView Name="ListViewEmployees" d:ItemsSource="{Binding}" Margin="640,-200,20,0" Height="200">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width ="200" DisplayMemberBinding="{Binding Path=FullName}">Имя Фамилия сотрудника</GridViewColumn>
+                    <GridViewColumn Width ="200" DisplayMemberBinding="{Binding Path=JobTitle}">Должность</GridViewColumn>
+                    <GridViewColumn Width ="auto" DisplayMemberBinding="{Binding Path=Age}">Возраст</GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Name ="LabelHeader" Content="Label" HorizontalAlignment="Left" Margin="420,10,0,0" VerticalAlignment="Top" Width="400"/>
+        <Button Name="DepChange" Content="Изменить" HorizontalAlignment="Left" Margin="60,270,0,0" VerticalAlignment="Top" Width="100" Click="DepChange_Click"/>
+        <Button Name="DepAdd" Content="Добавить" HorizontalAlignment="Left" Margin="230,270,0,0" VerticalAlignment="Top" Width="100" Click="DepAdd_Click"/>
+        <Button Name="DepDelete" Content="Удалить" HorizontalAlignment="Left" Margin="410,270,0,0" VerticalAlignment="Top" Width="100" Click="DepDelete_Click"/>
+        <Button Name="EmplChange" Content="Изменить" HorizontalAlignment="Left" Margin="670,270,0,0" VerticalAlignment="Top" Width="100" Click="EmplChange_Click"/>
+        <Button Name="EmplAdd" Content="Добавить" HorizontalAlignment="Left" Margin="840,270,0,0" VerticalAlignment="Top" Width="100" Click="EmplAdd_Click"/>
+        <Button Name="EmplDelete" Content="Удалить" HorizontalAlignment="Left" Margin="1020,270,0,0" VerticalAlignment="Top" Width="100" Click="EmplDelete_Click"/>
+
+    </Grid>
+</Window>

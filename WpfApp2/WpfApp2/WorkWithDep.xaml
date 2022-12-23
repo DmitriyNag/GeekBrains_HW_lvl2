@@ -1,0 +1,22 @@
+﻿<Window x:Class="WpfApp2.WorkWithDep"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp2"
+        mc:Ignorable="d"
+        Title="Департамент" Height="322" Width="650">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="7*"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Название" HorizontalAlignment="Left" Margin="10,22,0,0" VerticalAlignment="Top" Width="78" Grid.Row="1"/>
+        <TextBox Name="DepName" HorizontalAlignment="Left" Margin="100,22,0,0" TextWrapping="Wrap" Text="Имя департамента" VerticalAlignment="Top" Width="271" Height="26" Grid.Row="1"/>
+        <Button Name="DepSave" Content="Сохранить" HorizontalAlignment="Left" Margin="100,202,0,0" VerticalAlignment="Top" Width="102" Click="DepSave_Click" Grid.Row="1"/>
+        <Button Name="DepCancel" Content="Отмена" HorizontalAlignment="Left" Margin="300,202,0,0" VerticalAlignment="Top" Width="107" Click="DepCancel_Click" Grid.Row="1"/>
+        <Label Name="DepIDLabel" Content="" HorizontalAlignment="Left" Margin="300,70,0,0" Grid.Row="1" VerticalAlignment="Top" Visibility="Hidden"/>
+
+    </Grid>
+</Window>
